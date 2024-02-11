@@ -9,11 +9,12 @@ files = os.listdir(path)
 files = ["archiva", "cassandra", "errai", "flink", "groovy", "hbase", "hibernate", "hive", "jboss-transaction-manager", "kafka", "lucene", "maven", "resteasy", "spark", "switchyard", "zookeeper"]
 # "jbehave", "jbpm"
 files = ["certbot", "compose", "django_rest_framework", "flask", "keras", "mitmproxy", "pipenv", "requests", "scikit-learn", "scrapy", "spaCy", "tornado"]
+files = ["scikit-learn"]
 print("python dataset; MAP;MRR;Top 1;Top 5;Top 10")
 for file in files[:]:
     print(file, end=" ")
     filePath = path+"\\"+file + ".sqlite3"
     issues = read_issues(filePath)
-    issues = [issue for issue in issues if len(issue.files)>0]
+    issues = [issue for issue in issues if len(issue.files) > 0]
 
     calculate(issues, filePath)

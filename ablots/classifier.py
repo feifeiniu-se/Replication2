@@ -70,11 +70,11 @@ def DT(train, test):
     # clf = DecisionTreeClassifier()
     # clf = DecisionTreeClassifier(criterion="gini", min_samples_split=100, max_depth=16)
     # 随机森林
-    clf = RandomForestClassifier(random_state=0, n_estimators=500, min_samples_split=100, max_depth=16)
+    # clf = RandomForestClassifier(random_state=0, n_estimators=500, min_samples_split=100, max_depth=16)
     # SVM
     # clf = svm.SVC(gamma='scale', C=10, decision_function_shape='ovr', kernel='rbf', probability=True)
     # 逻辑回归
-    # clf = LogisticRegression(C=10)
+    clf = LogisticRegression(C=10)
     # 增强学习
     # clf = AdaBoostClassifier(LogisticRegression(), n_estimators=50)
     # 投票

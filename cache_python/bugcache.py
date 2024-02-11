@@ -41,7 +41,7 @@ def versionHistoryCompute(issues, fileHistories, days):
         for f,v in fileHistories.items():
             v.sort(key=lambda x: x.commit_date)
             v = [commit for commit in v if commit.commit_date<end_date and commit.commit_date>start_date]
-            v = [commit for commit in v if isBugFixing(commit.message, bugids) and commit.commit_date<end_date and commit.commit_date>start_date]
+            # v = [commit for commit in v if isBugFixing(commit.message, bugids) and commit.commit_date<end_date and commit.commit_date>start_date]
             if len(v)>0:
                 score = 0.0
                 for commit in v:
@@ -79,7 +79,7 @@ for file in files[:]:
     issues = [issue for issue in issues if len(issue.files)>0]
     # print(len(issues))
     commits = read_commits(filePath)
-    bugids = [issue.issue_id for issue in issues]
+    # bugids = [issue.issue_id for issue in issues]
     # commits = [commit for commit in commits if isBugFixing(commit.message, bugids)] # only select bug-fixing commits
     file_history = loadFileCommitHistory(commits) # {filePath: file commit history}
     versionHistoryCompute(issues, file_history, 15)

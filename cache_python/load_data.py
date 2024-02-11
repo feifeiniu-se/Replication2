@@ -17,8 +17,6 @@ def read_commits(path):
 
     for tmp in result:
          # only include commits for bug/fix
-        if "merge pull request" in tmp[2].lower(): # exclude merge files
-            continue
         if tmp[0] in commit_map:
             commit_map[tmp[0]].files.add(tmp[3])
         else:
