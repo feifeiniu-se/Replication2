@@ -272,25 +272,25 @@ def calculate_fixed(issues):
             bluir_score = issue.bluir_score[f] if f in issue.bluir_score else 0
             simi_score = issue.simi_score[f] if f in issue.simi_score else 0
 
-            # score = (0.2 * simi_score + 0.8 * bluir_score) * 0.7 + cache_score * 0.3
-            if len(intersection_bluir) <= len(intersection_simi) and len(intersection_bluir) <= len(intersection_cache):
-                # print('simi_score + cache_score')
-                score = simi_score + cache_score
-                # if simi_score != 0 and cache_score != 0:
-                #     score = score / 2
-
-            if len(intersection_simi) <= len(intersection_bluir) and len(intersection_simi) <= len(intersection_cache):
-                # print('bluir_score + cache_score')
-                score = bluir_score + cache_score
-                # if bluir_score != 0 and cache_score != 0:
-                #     score = score / 2
-
-            if len(intersection_cache) <= len(intersection_bluir) and len(intersection_cache) <= len(intersection_simi):
-                # print('bluir_score + simi_score')
-                # CombSUM
-                score = bluir_score + simi_score
-                # if bluir_score != 0 and simi_score != 0:
-                #     score = score / 2
+            score = (0.2 * simi_score + 0.8 * bluir_score) * 0.7 + cache_score * 0.3
+            # if len(intersection_bluir) <= len(intersection_simi) and len(intersection_bluir) <= len(intersection_cache):
+            #     # print('simi_score + cache_score')
+            #     score = simi_score + cache_score
+            #     # if simi_score != 0 and cache_score != 0:
+            #     #     score = score / 2
+            #
+            # if len(intersection_simi) <= len(intersection_bluir) and len(intersection_simi) <= len(intersection_cache):
+            #     # print('bluir_score + cache_score')
+            #     score = bluir_score + cache_score
+            #     # if bluir_score != 0 and cache_score != 0:
+            #     #     score = score / 2
+            #
+            # if len(intersection_cache) <= len(intersection_bluir) and len(intersection_cache) <= len(intersection_simi):
+            #     # print('bluir_score + simi_score')
+            #     # CombSUM
+            #     score = bluir_score + simi_score
+            #     # if bluir_score != 0 and simi_score != 0:
+            #     #     score = score / 2
 
             amalgam_score[f] = score
         sorted_files = sorted(amalgam_score.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
@@ -473,7 +473,7 @@ for file in files[:]:
     # evaluate3_python(issues, "tracescore")
     # evaluate3_python(issues, "bluir")
     # calculate(issues)
-    # calculate_fixed(issues)
+    calculate_fixed(issues)
     # calculate_bias(issues)
     # calculate_corr(issues)
-    calculate_borda(issues)
+    # calculate_borda(issues)
