@@ -18,7 +18,7 @@ The original paper is a replication study of the original paper "Analyzing requi
     /
     .
     |--- ablots/            Implementation of composer component.	
-    |--- bluir_python/      Extract the code structure of the python dataset.
+    |--- bluir_python/      Implementation of code structure component on python dataset.
     |--- cache/             Implementation of version history component.
     |--- cache_python/      Implementation of version history component on python dataset.
     |--- data/              Example of the data set.
@@ -37,10 +37,20 @@ Here is the data model for the SEOSS 33 dataset. For each project, the data set 
 ![avatar](dataset.png)
 
 <h2 id="3"> Requirements </h2>
-python 3.7
+python 3.7  <br>   
+indri 5.21
 
 <h2 id="4"> How to run </h2>
 
+The bluir_python package is an implementation of the code structure component, where the first four files are used to extract the code structure , build the index, build the query document, and retrieve. Build indexing and retrieval using the indri toolkit (https://downloads.sourceforge.net/project/lemur/lemur/indri-5.21/indri-5.21.tar.gz).
+
+*1_fact_extractor.py: This file is used to extract the code structure (using python's ast module),The path parameter indicates the path to the python dataset, the path_dir parameter indicates the storage path of the code structure file collection, and the files parameter indicates the name of the project in the dataset from which the code structure needs to be extracted.<br>
+*2_index_builder.py:To execute this file, you need to change the contents of Settings.txt to the bin folder path of your Indri, source_path and index_path are your code structure file collection path and index store path, respectively.<br>
+*3_query_extractor.py:To execute this file requires changing the outputPath parameter in the extractSumDesField method to your query document storage path and the url parameter to your sql database document path.<br>
+*4_retrieve.py:To execute this file, change the index_path parameter to your index storage path, the query_path parameter to your query document path, and the result_path parameter to your code structure score storage path.<br>
+*5_bluir_insert.py:To execute this file, you need to change the path parameter in the read_indriQueryResult method to your code structure score store path and the path parameter in the insert_database method to your database store path.<br>
+
+Refer to https://hub.nuaa.cf/exatoa/Bench4BL for the implementation of the code structure component.
 <h2 id="5"> How to  cite this paper </h2>
 
 To be known...
