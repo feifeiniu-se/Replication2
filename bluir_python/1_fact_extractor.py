@@ -42,7 +42,7 @@ path_dir = "F:\Python_dir"
 files = os.listdir(path)
 files = ["certbot", "compose", "django_rest_framework", "flask", "keras", "mitmproxy", "pipenv", "requests","scrapy","scikit-learn", "spaCy", "tornado"]
 files = ["django_rest_framework", "flask", "keras", "mitmproxy", "pipenv", "requests","scrapy", "spaCy", "tornado"]
-files = ["mitmproxy"]
+files = ["certbot"]
 for file in files[:]:
     print(file, end=" ")
     filePath = path+"\\"+file+"-master"

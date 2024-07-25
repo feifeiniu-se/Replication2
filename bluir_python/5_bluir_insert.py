@@ -4,7 +4,8 @@ import sqlite3
 def read_indriQueryResult(project):
     # read from index
 
-    path = "F:/Python_result/" + project+"/result.txt"
+    # path = "F:/Python_result/" + project+"/result.txt"
+    path = "F:/java-result/result.txt"
     re = open(path, encoding='utf-8')
     lines = re.readlines()
     items = []
@@ -23,7 +24,7 @@ def read_indriQueryResult(project):
     insert_database(project, items)
 
 def insert_database(project, items):
-    path = "F:/AAA研究生资料/dataset/" + project+".sqlite3"
+    path = "F:/AAA研究生资料/dataset_old/test.sqlite3"
 
     connection = sqlite3.connect(path)
     connection.text_factory = str
@@ -39,7 +40,7 @@ def insert_database(project, items):
 
 
 projects = [ "compose", "django_rest_framework", "flask", "keras",  "pipenv", "requests",  "scrapy", "spaCy", "tornado"]
-projects = ["mitmproxy"]
+projects = ["test"]
 for p in projects[:]:
     # path = "F:/AAA研究生资料/dataset/" + p+".sqlite3"
     # print(path)

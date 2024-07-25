@@ -21,7 +21,6 @@ class FuncVisitor(ast.NodeVisitor):
 class ClassVisitor(ast.NodeVisitor):
     def __init__(self):
         self.classes = []
-
     def visit_ClassDef(self, node):
         self.classes.append(node.name)
         ast.NodeVisitor.generic_visit(self, node)
