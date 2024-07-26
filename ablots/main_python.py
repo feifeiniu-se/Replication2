@@ -24,7 +24,7 @@ def evaluate(test):
     evaluation(ground_truth, predict_result)
 
 def evaluate3_python(issues, flag):
-    bugReport = [x for x in issues]
+    bugReport = [x for x in issues ]
     print(len(bugReport), end=";")
     train_size = int(len(bugReport) * 0.8)
 
@@ -105,6 +105,201 @@ def calculate(issues):
     reRank(test, pairs_test, result)
     evaluate(test)
 
+# 基于重叠+CombSUM
+def calculate_overlap(issues):
+    bugReport = [x for x in issues]
+    train_size = int(len(bugReport) * 0.8)
+
+    bugReport.sort(key=lambda x: x.fixed_date)
+    test = bugReport[train_size:]
+
+    for issue in test:
+        amalgam_score = {}
+        file_candidate = []
+        file_candidate.extend([f for f in issue.bluir_score])
+        file_candidate.extend([f for f in issue.simi_score])
+        file_candidate = set(file_candidate)
+        Len = int(len(file_candidate) * 0.1)
+
+        # list
+        ordered_cache_score = sorted(issue.cache_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_bluir_score = sorted(issue.bluir_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_simi_score = sorted(issue.simi_score.items(), key=lambda x: x[1], reverse=True)
+
+        cache_candidate = [x[0] for x in ordered_cache_score][:Len]
+        cache_candidate = set(cache_candidate)
+        bluir_candidate = [x[0] for x in ordered_bluir_score][:Len]
+        bluir_candidate = set(bluir_candidate)
+        simi_candidate = [x[0] for x in ordered_simi_score][:Len]
+        simi_candidate = set(simi_candidate)
+        # print(len(cache_candidate), len(bluir_candidate), len(simi_candidate))
+        intersection_cache = cache_candidate.intersection(bluir_candidate.union(simi_candidate))
+        intersection_bluir = bluir_candidate.intersection(simi_candidate.union(cache_candidate))
+        intersection_simi = simi_candidate.intersection(bluir_candidate.union(cache_candidate))
+        # print(len(intersection_cache), len(intersection_bluir), len(intersection_simi))
+
+        for f in file_candidate:
+            cache_score = issue.cache_score[f] if f in issue.cache_score else 0
+            bluir_score = issue.bluir_score[f] if f in issue.bluir_score else 0
+            simi_score = issue.simi_score[f] if f in issue.simi_score else 0
+
+            score = (0.2 * simi_score + 0.8 * bluir_score) * 0.7 + cache_score * 0.3
+            if len(intersection_bluir) <= len(intersection_simi) and len(intersection_bluir) <= len(intersection_cache):
+                # print('simi_score + cache_score')
+                score = simi_score + cache_score
+                # if simi_score != 0 and cache_score != 0:
+                #     score = score / 2
+
+            if len(intersection_simi) <= len(intersection_bluir) and len(intersection_simi) <= len(intersection_cache):
+                # print('bluir_score + cache_score')
+                score = bluir_score + cache_score
+                # if bluir_score != 0 and cache_score != 0:
+                #     score = score / 2
+
+            if len(intersection_cache) <= len(intersection_bluir) and len(intersection_cache) <= len(intersection_simi):
+                # print('bluir_score + simi_score')
+                # CombSUM
+                score = bluir_score + simi_score
+                # if bluir_score != 0 and simi_score != 0:
+                #     score = score / 2
+
+            amalgam_score[f] = score
+        sorted_files = sorted(amalgam_score.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+        # 每个测试集bug报告的源文件分数排序结果
+        issue.ablots = [x[0] for x in sorted_files ]
+
+
+    evaluate(test)
+
+def calculate_combanz(issues):
+    bugReport = [x for x in issues]
+    train_size = int(len(bugReport) * 0.8)
+
+    bugReport.sort(key=lambda x: x.fixed_date)
+    test = bugReport[train_size:]
+
+    for issue in test:
+        amalgam_score = {}
+        file_candidate = []
+        file_candidate.extend([f for f in issue.bluir_score])
+        file_candidate.extend([f for f in issue.simi_score])
+        file_candidate = set(file_candidate)
+        Len = int(len(file_candidate) * 0.1)
+
+        # list
+        ordered_cache_score = sorted(issue.cache_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_bluir_score = sorted(issue.bluir_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_simi_score = sorted(issue.simi_score.items(), key=lambda x: x[1], reverse=True)
+
+        cache_candidate = [x[0] for x in ordered_cache_score][:Len]
+        cache_candidate = set(cache_candidate)
+        bluir_candidate = [x[0] for x in ordered_bluir_score][:Len]
+        bluir_candidate = set(bluir_candidate)
+        simi_candidate = [x[0] for x in ordered_simi_score][:Len]
+        simi_candidate = set(simi_candidate)
+        # print(len(cache_candidate), len(bluir_candidate), len(simi_candidate))
+        intersection_cache = cache_candidate.intersection(bluir_candidate.union(simi_candidate))
+        intersection_bluir = bluir_candidate.intersection(simi_candidate.union(cache_candidate))
+        intersection_simi = simi_candidate.intersection(bluir_candidate.union(cache_candidate))
+        # print(len(intersection_cache), len(intersection_bluir), len(intersection_simi))
+
+        for f in file_candidate:
+            cache_score = issue.cache_score[f] if f in issue.cache_score else 0
+            bluir_score = issue.bluir_score[f] if f in issue.bluir_score else 0
+            simi_score = issue.simi_score[f] if f in issue.simi_score else 0
+
+            score = (0.2 * simi_score + 0.8 * bluir_score) * 0.7 + cache_score * 0.3
+            if len(intersection_bluir) <= len(intersection_simi) and len(intersection_bluir) <= len(intersection_cache):
+                # print('simi_score + cache_score')
+                score = simi_score + cache_score
+                if simi_score != 0 and cache_score != 0:
+                    score = score / 2
+
+            if len(intersection_simi) <= len(intersection_bluir) and len(intersection_simi) <= len(intersection_cache):
+                # print('bluir_score + cache_score')
+                score = bluir_score + cache_score
+                if bluir_score != 0 and cache_score != 0:
+                    score = score / 2
+
+            if len(intersection_cache) <= len(intersection_bluir) and len(intersection_cache) <= len(intersection_simi):
+                # print('bluir_score + simi_score')
+                # CombSUM
+                score = bluir_score + simi_score
+                if bluir_score != 0 and simi_score != 0:
+                    score = score / 2
+
+            amalgam_score[f] = score
+        sorted_files = sorted(amalgam_score.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+        # 每个测试集bug报告的源文件分数排序结果
+        issue.ablots = [x[0] for x in sorted_files]
+
+
+    evaluate(test)
+
+def calculate_combmnz(issues):
+    bugReport = [x for x in issues]
+    train_size = int(len(bugReport) * 0.8)
+
+    bugReport.sort(key=lambda x: x.fixed_date)
+    test = bugReport[train_size:]
+
+    for issue in test:
+        amalgam_score = {}
+        file_candidate = []
+        file_candidate.extend([f for f in issue.bluir_score])
+        file_candidate.extend([f for f in issue.simi_score])
+        file_candidate = set(file_candidate)
+        Len = int(len(file_candidate) * 0.1)
+
+        # list
+        ordered_cache_score = sorted(issue.cache_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_bluir_score = sorted(issue.bluir_score.items(), key=lambda x: x[1], reverse=True)
+        ordered_simi_score = sorted(issue.simi_score.items(), key=lambda x: x[1], reverse=True)
+
+        cache_candidate = [x[0] for x in ordered_cache_score][:Len]
+        cache_candidate = set(cache_candidate)
+        bluir_candidate = [x[0] for x in ordered_bluir_score][:Len]
+        bluir_candidate = set(bluir_candidate)
+        simi_candidate = [x[0] for x in ordered_simi_score][:Len]
+        simi_candidate = set(simi_candidate)
+        # print(len(cache_candidate), len(bluir_candidate), len(simi_candidate))
+        intersection_cache = cache_candidate.intersection(bluir_candidate.union(simi_candidate))
+        intersection_bluir = bluir_candidate.intersection(simi_candidate.union(cache_candidate))
+        intersection_simi = simi_candidate.intersection(bluir_candidate.union(cache_candidate))
+        # print(len(intersection_cache), len(intersection_bluir), len(intersection_simi))
+
+        for f in file_candidate:
+            cache_score = issue.cache_score[f] if f in issue.cache_score else 0
+            bluir_score = issue.bluir_score[f] if f in issue.bluir_score else 0
+            simi_score = issue.simi_score[f] if f in issue.simi_score else 0
+
+            score = (0.2 * simi_score + 0.8 * bluir_score) * 0.7 + cache_score * 0.3
+            if len(intersection_bluir) <= len(intersection_simi) and len(intersection_bluir) <= len(intersection_cache):
+                # print('simi_score + cache_score')
+                score = simi_score + cache_score
+                if simi_score != 0 and cache_score != 0:
+                    score = score * 2
+
+            if len(intersection_simi) <= len(intersection_bluir) and len(intersection_simi) <= len(intersection_cache):
+                # print('bluir_score + cache_score')
+                score = bluir_score + cache_score
+                if bluir_score != 0 and cache_score != 0:
+                    score = score * 2
+
+            if len(intersection_cache) <= len(intersection_bluir) and len(intersection_cache) <= len(intersection_simi):
+                # print('bluir_score + simi_score')
+                # CombSUM
+                score = bluir_score + simi_score
+                if bluir_score != 0 and simi_score != 0:
+                    score = score * 2
+
+            amalgam_score[f] = score
+        sorted_files = sorted(amalgam_score.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+        # 每个测试集bug报告的源文件分数排序结果
+        issue.ablots = [x[0] for x in sorted_files ]
+
+
+    evaluate(test)
 # 基于偏差+CombSUM
 def calculate_bias(issues):
     bugReport = [x for x in issues]
@@ -209,21 +404,21 @@ def calculate_bias(issues):
             if cos_sim_bluir <= cos_sim_simi and cos_sim_bluir <= cos_sim_cache:
                 # print('simi_score + cache_score')
                 score = simi_score + cache_score
-                if simi_score != 0 and cache_score != 0:
-                    score = score * 2
+                # if simi_score != 0 and cache_score != 0:
+                #     score = score * 2
 
             if cos_sim_simi <= cos_sim_bluir and cos_sim_simi <= cos_sim_cache:
                 # print('bluir_score + cache_score')
                 score = bluir_score + cache_score
-                if bluir_score != 0 and cache_score != 0:
-                    score = score * 2
+                # if bluir_score != 0 and cache_score != 0:
+                #     score = score * 2
 
             if cos_sim_cache <= cos_sim_bluir and cos_sim_cache <= cos_sim_simi:
                 # print('bluir_score + simi_score')
                 # CombSUM
                 score = bluir_score + simi_score
-                if bluir_score != 0 and simi_score != 0:
-                    score = score * 2
+                # if bluir_score != 0 and simi_score != 0:
+                #     score = score * 2
                 # score = simi_score * cos_sim_simi + bluir_score * cos_sim_bluir + cache_score * cos_sim_cache
             amalgam_score[f] = score
         sorted_files = sorted(amalgam_score.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
@@ -461,7 +656,7 @@ def calculate_borda(issues):
 path = "F:\AAA研究生资料\dataset"
 files = os.listdir(path)
 files = ["certbot", "compose", "django_rest_framework", "flask", "keras", "mitmproxy", "pipenv", "requests", "scikit-learn", "scrapy", "spaCy", "tornado"]
-# files = ["mitmproxy"]
+files = ["scikit-learn"]
 print(";MAP;MRR;Top 1;Top 5;Top 10")
 for file in files[:]:
     print(file, end=" ")
@@ -472,8 +667,11 @@ for file in files[:]:
     # evaluate3_python(issues, "cache")
     # evaluate3_python(issues, "tracescore")
     # evaluate3_python(issues, "bluir")
-    # calculate(issues)
-    calculate_fixed(issues)
+    calculate(issues)
+    # calculate_fixed(issues)
+    # calculate_overlap(issues)
     # calculate_bias(issues)
+    # calculate_combanz(issues)
+    # calculate_combmnz(issues)
     # calculate_corr(issues)
     # calculate_borda(issues)
